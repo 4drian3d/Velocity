@@ -382,6 +382,10 @@ public class VelocityConfiguration implements ProxyConfig {
     return advanced.isLogPlayerConnections();
   }
 
+  public boolean isPrintDiconnectStacktrace() {
+    return advanced.isPrintDisconnectStacktrace();
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
@@ -645,6 +649,7 @@ public class VelocityConfiguration implements ProxyConfig {
     @Expose private boolean announceProxyCommands = true;
     @Expose private boolean logCommandExecutions = false;
     @Expose private boolean logPlayerConnections = true;
+    @Expose private boolean printDisconnectStacktrace = true;
 
     private Advanced() {
     }
@@ -669,6 +674,7 @@ public class VelocityConfiguration implements ProxyConfig {
         this.announceProxyCommands = config.getOrElse("announce-proxy-commands", true);
         this.logCommandExecutions = config.getOrElse("log-command-executions", false);
         this.logPlayerConnections = config.getOrElse("log-player-connections", true);
+        this.printDisconnectStacktrace = config.getOrElse("print-disconnect-stacktrace", true);
       }
     }
 
@@ -724,6 +730,10 @@ public class VelocityConfiguration implements ProxyConfig {
       return logPlayerConnections;
     }
 
+    public boolean isPrintDisconnectStacktrace() {
+      return printDisconnectStacktrace;
+    }
+
     @Override
     public String toString() {
       return "Advanced{"
@@ -740,6 +750,7 @@ public class VelocityConfiguration implements ProxyConfig {
           + ", announceProxyCommands=" + announceProxyCommands
           + ", logCommandExecutions=" + logCommandExecutions
           + ", logPlayerConnections=" + logPlayerConnections
+          + ", printDisconnectStacktrace=" + printDisconnectStacktrace
           + '}';
     }
   }

@@ -137,6 +137,9 @@ log-command-executions = false
 # and disconnecting from the proxy.
 log-player-connections = true
 
+# Print the stacktrace of the disconnect errors
+print-disconnect-stacktrace=true
+
 [query]
 # Whether to enable responding to GameSpy 4 query responses or not.
 enabled = false
