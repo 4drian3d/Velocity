@@ -27,6 +27,7 @@ import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.util.ClosestLocaleMatcher;
 import java.util.List;
 import java.util.Locale;
+import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.facet.FacetPointers;
@@ -68,7 +69,7 @@ public final class VelocityConsole extends SimpleTerminalConsole implements Cons
       .hexColors().character(LegacyComponentSerializer.SECTION_CHAR).hexCharacter('#').build();
 
   @Override
-  public void sendMessage(@NonNull Identity identity, @NonNull Component message) {
+  public void sendMessage(@NonNull Identity identity, @NonNull Component message, @NonNull MessageType messageType) {
     Component translated = GlobalTranslator.render(message, ClosestLocaleMatcher.INSTANCE
         .lookupClosest(Locale.getDefault()));
     logger.info(AnsiConverter.convert(HEX_SERIALIZER.serialize(translated)));
