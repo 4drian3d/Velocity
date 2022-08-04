@@ -40,11 +40,14 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,18 +83,44 @@ public class VelocityPluginManager implements PluginManager {
       justification = "I looked carefully and there's no way SpotBugs is right.")
   public void loadPlugins(Path directory) throws IOException {
     checkNotNull(directory, "directory");
-    checkArgument(directory.toFile().isDirectory(), "provided path isn't a directory");
+    checkArgument(Files.isDirectory(directory), "provided path isn't a directory");
 
-    List<PluginDescription> found = new ArrayList<>();
+    Map<PluginDescription, Path> found = new HashMap<>();
     JavaPluginLoader loader = new JavaPluginLoader(server, directory);
 
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory,
-        p -> p.toFile().isFile() && p.toString().endsWith(".jar"))) {
+        p -> Files.isRegularFile(p) && p.toString().endsWith(".jar"))) {
       for (Path path : stream) {
         try {
-          found.add(loader.loadCandidate(path));
+          found.put(loader.loadCandidate(path), path);
         } catch (Exception e) {
           logger.error("Unable to load plugin {}", path, e);
+        }
+      }
+    }
+
+    Path updateFolder = directory.resolve("update");
+    try (DirectoryStream<Path> updateStream = Files.newDirectoryStream(updateFolder,
+        p -> Files.isRegularFile(p) && p.toString().endsWith(".jar"))) {
+      for (Path updatePath : updateStream) {
+        try {
+          PluginDescription description = loader.loadCandidate(updatePath);
+          Iterator<PluginDescription> iterator = found.keySet().iterator();
+          PluginDescription actual;
+          iterator: while (iterator.hasNext()) {
+            actual = iterator.next();
+            if (actual.getId().equals(description.getId())) {
+              Path pluginPath = found.get(actual);
+              Files.move(updatePath, pluginPath, StandardCopyOption.REPLACE_EXISTING);
+              found.remove(actual);
+              found.put(description, pluginPath);
+              break iterator;
+            }
+          }
+        } catch (IOException e) {
+          logger.error("Unable to delete plugin update file", e);
+        } catch (Exception e) {
+          // Ignored, Probably not a valid plugin
         }
       }
     }
@@ -101,7 +130,7 @@ public class VelocityPluginManager implements PluginManager {
       return;
     }
 
-    List<PluginDescription> sortedPlugins = PluginDependencyUtils.sortCandidates(found);
+    List<PluginDescription> sortedPlugins = PluginDependencyUtils.sortCandidates(new ArrayList<>(found.keySet()));
 
     Set<String> loadedPluginsById = new HashSet<>();
     Map<PluginContainer, Module> pluginContainers = new LinkedHashMap<>();
