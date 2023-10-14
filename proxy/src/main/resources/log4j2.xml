@@ -18,6 +18,9 @@
 
 <!-- Disable shutdown hook, because we have our own -->
 <Configuration status="warn" shutdownHook="disable">
+  <CustomConverters>
+    <Converter name="stripAnsi" class="com.velocitypowered.proxy.util.StripAnsiConverter" />
+  </CustomConverters>
   <Appenders>
     <TerminalConsole name="TerminalConsole">
       <PatternLayout>
@@ -33,7 +36,7 @@
       filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz"
       immediateFlush="false">
       <PatternLayout
-        pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n"/>
+        pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %stripAnsi{%msg}%n"/>
       <Policies>
         <TimeBasedTriggeringPolicy/>
         <OnStartupTriggeringPolicy/>

@@ -119,4 +119,5 @@ dependencies {
     implementation(libs.bundles.flare)
     compileOnly(libs.spotbugs.annotations)
     testImplementation(libs.mockito)
+    annotationProcessor("org.apache.logging.log4j:log4j-core:2.20.0")
 }
