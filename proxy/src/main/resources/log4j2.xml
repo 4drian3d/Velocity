@@ -18,9 +18,9 @@
 
 <!-- Disable shutdown hook, because we have our own -->
 <Configuration status="warn" shutdownHook="disable">
-  <CustomConverters>
-    <Converter name="stripAnsi" class="com.velocitypowered.proxy.util.StripAnsiConverter" />
-  </CustomConverters>
+<!--  <CustomConverters>-->
+<!--    <Converter name="stripAnsi" class="com.velocitypowered.proxy.util.StripAnsiConverter" />-->
+<!--  </CustomConverters>-->
   <Appenders>
     <TerminalConsole name="TerminalConsole">
       <PatternLayout>

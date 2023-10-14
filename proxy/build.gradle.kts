@@ -24,7 +24,7 @@ tasks {
     }
 
     shadowJar {
-        transform(Log4j2PluginsCacheFileTransformer::class.java)
+        transform(Log4j2PluginsCacheFileTransformer())
 
         // Exclude all the collection types we don"t intend to use
         exclude("it/unimi/dsi/fastutil/booleans/**")
@@ -91,6 +91,7 @@ tasks {
 dependencies {
     implementation(project(":velocity-api"))
     implementation(project(":velocity-native"))
+    implementation(project(":velocity-proxy-log4j2-plugin"))
 
     implementation(libs.bundles.log4j)
     implementation(libs.kyori.ansi)
@@ -119,5 +120,4 @@ dependencies {
     implementation(libs.bundles.flare)
     compileOnly(libs.spotbugs.annotations)
     testImplementation(libs.mockito)
-    annotationProcessor("org.apache.logging.log4j:log4j-core:2.20.0")
 }
