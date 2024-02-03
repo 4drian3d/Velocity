@@ -24,8 +24,10 @@ import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
+import com.velocitypowered.proxy.crypto.SignedMessageImpl;
 import com.velocitypowered.proxy.protocol.packet.chat.ChatHandler;
 import com.velocitypowered.proxy.protocol.packet.chat.ChatQueue;
+import net.kyori.adventure.chat.SignedMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,7 +52,16 @@ public class SessionChatHandler implements ChatHandler<SessionPlayerChatPacket> 
   public void handlePlayerChatInternal(SessionPlayerChatPacket packet) {
     ChatQueue chatQueue = this.player.getChatQueue();
     EventManager eventManager = this.server.getEventManager();
-    PlayerChatEvent toSend = new PlayerChatEvent(player, packet.getMessage());
+    final SignedMessage signedMessage = new SignedMessageImpl(
+            packet.timestamp,
+            packet.salt,
+            packet.signature.length == 0 ? null : SignedMessage.signature(packet.signature),
+            // TODO: null unsigned component
+            null,
+            packet.message,
+            this.player.identity()
+    );
+    PlayerChatEvent toSend = new PlayerChatEvent(player, packet.getMessage(), signedMessage);
     chatQueue.queuePacket(
         eventManager.fire(toSend)
             .thenApply(pme -> {

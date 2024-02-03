@@ -21,6 +21,7 @@ import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.packet.AvailableCommandsPacket;
 import com.velocitypowered.proxy.protocol.packet.BossBarPacket;
 import com.velocitypowered.proxy.protocol.packet.ClientSettingsPacket;
+import com.velocitypowered.proxy.protocol.packet.DeleteChatPacket;
 import com.velocitypowered.proxy.protocol.packet.DisconnectPacket;
 import com.velocitypowered.proxy.protocol.packet.EncryptionRequestPacket;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
@@ -322,6 +323,10 @@ public interface MinecraftSessionHandler {
   }
 
   default boolean handle(ChatAcknowledgementPacket chatAcknowledgement) {
+    return false;
+  }
+
+  default boolean handle(DeleteChatPacket packet) {
     return false;
   }
 }

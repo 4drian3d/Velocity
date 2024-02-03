@@ -17,15 +17,19 @@
 
 package com.velocitypowered.proxy.protocol.packet.chat.keyed;
 
+import com.google.common.primitives.Longs;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer;
+import com.velocitypowered.proxy.crypto.SignedMessageImpl;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.packet.chat.ChatQueue;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,7 +72,15 @@ public class KeyedChatHandler implements
   public void handlePlayerChatInternal(KeyedPlayerChatPacket packet) {
     ChatQueue chatQueue = this.player.getChatQueue();
     EventManager eventManager = this.server.getEventManager();
-    PlayerChatEvent toSend = new PlayerChatEvent(player, packet.getMessage());
+    final SignedMessage signedMessage = new SignedMessageImpl(
+            Instant.now(),
+            packet.isUnsigned() ? 0L : Longs.fromByteArray(packet.getSalt()),
+            packet.getSignature() == null ? null : SignedMessage.signature(packet.getSignature()),
+            null,
+            packet.getMessage(),
+            player.identity()
+    );
+    PlayerChatEvent toSend = new PlayerChatEvent(player, packet.getMessage(), signedMessage);
     CompletableFuture<PlayerChatEvent> future = eventManager.fire(toSend);
 
     CompletableFuture<MinecraftPacket> chatFuture;

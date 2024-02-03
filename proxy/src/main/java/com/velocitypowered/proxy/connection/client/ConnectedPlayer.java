@@ -60,13 +60,7 @@ import com.velocitypowered.proxy.connection.util.ConnectionRequestResults.Impl;
 import com.velocitypowered.proxy.connection.util.VelocityInboundConnection;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.netty.MinecraftEncoder;
-import com.velocitypowered.proxy.protocol.packet.ClientSettingsPacket;
-import com.velocitypowered.proxy.protocol.packet.DisconnectPacket;
-import com.velocitypowered.proxy.protocol.packet.HeaderAndFooterPacket;
-import com.velocitypowered.proxy.protocol.packet.KeepAlivePacket;
-import com.velocitypowered.proxy.protocol.packet.PluginMessagePacket;
-import com.velocitypowered.proxy.protocol.packet.RemoveResourcePackPacket;
-import com.velocitypowered.proxy.protocol.packet.ResourcePackRequestPacket;
+import com.velocitypowered.proxy.protocol.packet.*;
 import com.velocitypowered.proxy.protocol.packet.chat.ChatQueue;
 import com.velocitypowered.proxy.protocol.packet.chat.ChatType;
 import com.velocitypowered.proxy.protocol.packet.chat.ComponentHolder;
@@ -102,6 +96,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.platform.facet.FacetPointers;
@@ -388,7 +383,14 @@ public class ConnectedPlayer implements MinecraftConnectionAssociation, Player, 
   }
 
   @Override
-  public void sendActionBar(net.kyori.adventure.text.@NonNull Component message) {
+  public void deleteMessage(final SignedMessage.Signature signature) {
+    if (getProtocolVersion().noLessThan(ProtocolVersion.MINECRAFT_1_20_2)) {
+      this.connection.write(new DeleteChatPacket(-1, signature.bytes()));
+    }
+  }
+
+  @Override
+  public void sendActionBar(final @NonNull Component message) {
     Component translated = translateMessage(message);
 
     ProtocolVersion playerVersion = getProtocolVersion();

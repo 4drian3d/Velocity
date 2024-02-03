@@ -35,8 +35,8 @@ public class KeyedPlayerChatPacket implements MinecraftPacket {
   private boolean signedPreview;
   private boolean unsigned = false;
   private @Nullable Instant expiry;
-  private @Nullable byte[] signature;
-  private @Nullable byte[] salt;
+  private byte @Nullable [] signature;
+  private byte @Nullable [] salt;
   private SignaturePair[] previousMessages = new SignaturePair[0];
   private @Nullable SignaturePair lastMessage;
 
@@ -71,6 +71,14 @@ public class KeyedPlayerChatPacket implements MinecraftPacket {
 
   public boolean isSignedPreview() {
     return signedPreview;
+  }
+
+  public byte[] getSalt() {
+    return this.salt;
+  }
+
+  public byte[] getSignature() {
+    return this.signature;
   }
 
   @Override

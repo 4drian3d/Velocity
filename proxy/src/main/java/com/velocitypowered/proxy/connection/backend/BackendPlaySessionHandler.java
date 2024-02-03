@@ -43,6 +43,7 @@ import com.velocitypowered.proxy.protocol.netty.MinecraftDecoder;
 import com.velocitypowered.proxy.protocol.packet.AvailableCommandsPacket;
 import com.velocitypowered.proxy.protocol.packet.BossBarPacket;
 import com.velocitypowered.proxy.protocol.packet.ClientSettingsPacket;
+import com.velocitypowered.proxy.protocol.packet.DeleteChatPacket;
 import com.velocitypowered.proxy.protocol.packet.DisconnectPacket;
 import com.velocitypowered.proxy.protocol.packet.KeepAlivePacket;
 import com.velocitypowered.proxy.protocol.packet.LegacyPlayerListItemPacket;
@@ -321,6 +322,13 @@ public class BackendPlaySessionHandler implements MinecraftSessionHandler {
                 pingEvent.getPing().getDescriptionComponent()),
                 pingEvent.getPing().getFavicon().orElse(null), packet.isSecureChatEnforced())),
         playerConnection.eventLoop());
+    return true;
+  }
+
+  @Override
+  public boolean handle(DeleteChatPacket packet) {
+    // possible delete chat event?
+    playerConnection.write(packet);
     return true;
   }
 

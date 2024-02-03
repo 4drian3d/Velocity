@@ -49,6 +49,7 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.proxy.protocol.packet.AvailableCommandsPacket;
 import com.velocitypowered.proxy.protocol.packet.BossBarPacket;
 import com.velocitypowered.proxy.protocol.packet.ClientSettingsPacket;
+import com.velocitypowered.proxy.protocol.packet.DeleteChatPacket;
 import com.velocitypowered.proxy.protocol.packet.DisconnectPacket;
 import com.velocitypowered.proxy.protocol.packet.EncryptionRequestPacket;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
@@ -351,6 +352,10 @@ public enum StateRegistry {
           map(0x15, MINECRAFT_1_19_3, false),
           map(0x17, MINECRAFT_1_19_4, false),
           map(0x18, MINECRAFT_1_20_2, false));
+      clientbound.register(
+          DeleteChatPacket.class,
+          DeleteChatPacket::new,
+          map(0x1A, MINECRAFT_1_20_3, false));
       clientbound.register(
           DisconnectPacket.class,
           () -> new DisconnectPacket(false),

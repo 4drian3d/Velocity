@@ -12,8 +12,10 @@ import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.annotation.AwaitingEvent;
 import com.velocitypowered.api.proxy.Player;
 import java.util.Optional;
+import net.kyori.adventure.chat.SignedMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is fired when a player types in a chat message. Velocity will wait on this event
@@ -24,6 +26,7 @@ public final class PlayerChatEvent implements ResultedEvent<PlayerChatEvent.Chat
 
   private final Player player;
   private final String message;
+  private final SignedMessage signedMessage;
   private ChatResult result;
 
   /**
@@ -32,10 +35,30 @@ public final class PlayerChatEvent implements ResultedEvent<PlayerChatEvent.Chat
    * @param player the player sending the message
    * @param message the message being sent
    */
+  @Deprecated
   public PlayerChatEvent(Player player, String message) {
     this.player = Preconditions.checkNotNull(player, "player");
     this.message = Preconditions.checkNotNull(message, "message");
     this.result = ChatResult.allowed();
+    this.signedMessage = null;
+  }
+
+  /**
+   * Constructs a PlayerChatEvent.
+   *
+   * @param player the player sending the message
+   * @param message the message being sent
+   * @param signedMessage the signed message being sent
+   */
+  public PlayerChatEvent(
+          final @NotNull Player player,
+          final @NotNull String message,
+          final @Nullable SignedMessage signedMessage
+  ) {
+    this.player = Preconditions.checkNotNull(player, "player");
+    this.message = Preconditions.checkNotNull(message, "message");
+    this.result = ChatResult.allowed();
+    this.signedMessage = signedMessage;
   }
 
   public Player getPlayer() {
@@ -44,6 +67,10 @@ public final class PlayerChatEvent implements ResultedEvent<PlayerChatEvent.Chat
 
   public String getMessage() {
     return message;
+  }
+
+  public @Nullable SignedMessage signedMessage() {
+    return this.signedMessage;
   }
 
   @Override
@@ -62,6 +89,7 @@ public final class PlayerChatEvent implements ResultedEvent<PlayerChatEvent.Chat
         + "player=" + player
         + ", message=" + message
         + ", result=" + result
+        + ", signedMessage=" + signedMessage
         + '}';
   }
 
