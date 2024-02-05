@@ -64,6 +64,6 @@ public class DeleteChatPacket implements MinecraftPacket {
 
   @Override
   public boolean handle(MinecraftSessionHandler handler) {
-    return handler.handle(this);
+    return false;
   }
 }

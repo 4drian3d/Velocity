@@ -355,7 +355,7 @@ public enum StateRegistry {
       clientbound.register(
           DeleteChatPacket.class,
           DeleteChatPacket::new,
-          map(0x1A, MINECRAFT_1_20_3, false));
+          map(0x1A, MINECRAFT_1_20_3, true));
       clientbound.register(
           DisconnectPacket.class,
           () -> new DisconnectPacket(false),
