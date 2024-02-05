@@ -44,7 +44,7 @@ public class DeleteChatPacket implements MinecraftPacket {
           final ProtocolVersion protocolVersion
   ) {
     this.id = ProtocolUtils.readVarInt(buf);
-    if (id == -1) {
+    if (protocolVersion.lessThan(ProtocolVersion.MINECRAFT_1_20) || id == -1) {
       this.signature = ProtocolUtils.readByteArray(buf);
     }
   }
@@ -55,10 +55,10 @@ public class DeleteChatPacket implements MinecraftPacket {
           final ProtocolUtils.Direction direction,
           final ProtocolVersion protocolVersion
   ) {
-    ProtocolUtils.writeVarInt(buf, id);
+    ProtocolUtils.writeVarInt(buf, this.id);
     // id == -1 = signature != null
-    if (signature != null) {
-      ProtocolUtils.writeByteArray(buf, signature);
+    if (this.signature != null) {
+      ProtocolUtils.writeByteArray(buf, this.signature);
     }
   }
 

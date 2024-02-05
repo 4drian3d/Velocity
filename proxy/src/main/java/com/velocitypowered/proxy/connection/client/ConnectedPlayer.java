@@ -384,7 +384,8 @@ public class ConnectedPlayer implements MinecraftConnectionAssociation, Player, 
 
   @Override
   public void deleteMessage(final SignedMessage.Signature signature) {
-    if (getProtocolVersion().noLessThan(ProtocolVersion.MINECRAFT_1_20_2)) {
+    if (getProtocolVersion().noLessThan(ProtocolVersion.MINECRAFT_1_19_3)) {
+      Preconditions.checkNotNull(signature, "signature");
       this.connection.write(new DeleteChatPacket(-1, signature.bytes()));
     }
   }
