@@ -56,8 +56,7 @@ public class SessionChatHandler implements ChatHandler<SessionPlayerChatPacket> 
             packet.timestamp,
             packet.salt,
             packet.signature.length == 0 ? null : SignedMessage.signature(packet.signature),
-            // TODO: null unsigned component
-            null,
+            packet.unsignedContent == null ? null : packet.unsignedContent.getComponent(),
             packet.message,
             this.player.identity()
     );

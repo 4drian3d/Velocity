@@ -21,9 +21,11 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
+import com.velocitypowered.proxy.protocol.packet.chat.ComponentHolder;
 import com.velocitypowered.proxy.protocol.packet.chat.LastSeenMessages;
 import io.netty.buffer.ByteBuf;
 import java.time.Instant;
+import org.jetbrains.annotations.Nullable;
 
 public class SessionPlayerChatPacket implements MinecraftPacket {
 
@@ -33,6 +35,7 @@ public class SessionPlayerChatPacket implements MinecraftPacket {
   protected boolean signed;
   protected byte[] signature;
   protected LastSeenMessages lastSeenMessages;
+  protected @Nullable ComponentHolder unsignedContent;
 
   public SessionPlayerChatPacket() {
   }
@@ -61,6 +64,10 @@ public class SessionPlayerChatPacket implements MinecraftPacket {
     return lastSeenMessages;
   }
 
+  public @Nullable ComponentHolder getUnsignedContent() {
+    return this.unsignedContent;
+  }
+
   @Override
   public void decode(ByteBuf buf, ProtocolUtils.Direction direction,
       ProtocolVersion protocolVersion) {
@@ -74,6 +81,9 @@ public class SessionPlayerChatPacket implements MinecraftPacket {
       this.signature = new byte[0];
     }
     this.lastSeenMessages = new LastSeenMessages(buf);
+    if (buf.readBoolean()) {
+      this.unsignedContent = ComponentHolder.read(buf, protocolVersion);
+    }
   }
 
   @Override
@@ -87,6 +97,12 @@ public class SessionPlayerChatPacket implements MinecraftPacket {
       buf.writeBytes(this.signature);
     }
     this.lastSeenMessages.encode(buf);
+    if (this.unsignedContent != null) {
+      buf.writeBoolean(true);
+      this.unsignedContent.write(buf);
+    } else {
+      buf.writeBoolean(false);
+    }
   }
 
   @Override
